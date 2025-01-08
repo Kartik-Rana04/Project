@@ -15,6 +15,7 @@ import { VerifyOtpAndUpdatePasswordDto } from './dto/VerifyOtpAndUpdatePassword.
 import { Otp } from 'src/model/otp.model';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 import { emailSend } from 'src/libs/helper/mail';
+import { EditUserDto } from './dto/editUser.dto';
 
 @Injectable()
 export class UserService {
@@ -56,13 +57,13 @@ export class UserService {
       where: { email: email },
     });
 
-    if(emailFormat){
+    if (emailFormat) {
       Logger.error(Messages.ALREADY_REGISTERED);
-        return HandleResponse(
-          HttpStatus.NOT_FOUND,
-          ResponseData.ERROR,
-          `User ${ Messages.ALREADY_REGISTERED} Try with different email!`
-        );
+      return HandleResponse(
+        HttpStatus.NOT_FOUND,
+        ResponseData.ERROR,
+        `User ${Messages.ALREADY_REGISTERED} Try with different email!`
+      );
     }
 
     const addUser: UserData = await this.dbService.create(
@@ -214,5 +215,91 @@ export class UserService {
         );
       }
     }
+  }
+
+  async viewProfile(id: number) {
+
+    const userEmail = await this.dbService.findOne(
+      this.userModel,
+      { id },
+      undefined,
+      { message: Messages.NOT_FOUND },
+      undefined,
+      undefined,
+      true,
+    );
+
+    if (!userEmail) {
+      Logger.log(Messages.USER_NOT_FOUND)
+      return HandleResponse(
+        HttpStatus.BAD_REQUEST,
+        ResponseData.ERROR,
+        Messages.USER_NOT_FOUND
+      )
+    }
+    else {
+      Logger.log(Messages.USER_FOUND)
+      return HandleResponse(
+        HttpStatus.OK,
+        ResponseData.SUCCESS,
+        userEmail,
+        Messages.USER_FOUND
+      )
+    }
+  }
+
+  async updateProfile(id: number, dto: EditUserDto) {
+    try {
+      const findUserProfile = await this.dbService.findOne(
+        this.userModel,
+        { id },
+        undefined,
+        { message: Messages.NOT_FOUND },
+        undefined,
+        undefined,
+        true,
+      );
+
+      if (!findUserProfile) {
+        Logger.log(Messages.USER_NOT_FOUND)
+        return HandleResponse(
+          HttpStatus.BAD_REQUEST,
+          ResponseData.ERROR,
+          Messages.USER_NOT_FOUND
+        )
+      }
+      else {
+        const updatedUserData = await this.dbService.update(
+          this.userModel,
+          dto,
+          { id: id }
+        )
+
+        if (!updatedUserData) {
+          Logger.log(Messages.ERROR_UPDATE)
+          return HandleResponse(
+            HttpStatus.BAD_REQUEST,
+            ResponseData.ERROR,
+            Messages.ERROR_UPDATE
+          )
+        }
+        else {
+          Logger.log(Messages.UPDATE_SUCCESS)
+          return HandleResponse(
+            HttpStatus.OK,
+            ResponseData.SUCCESS,
+            `User ${Messages.UPDATE_SUCCESS}`
+          )
+        }
+      }
+    } catch (error) {
+      Logger.log(error)
+      return HandleResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ResponseData.ERROR,
+        error
+      )
+    }
+
   }
 }

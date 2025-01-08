@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { ModuleName } from 'src/libs/utils/enum';
 import { AddUserDto } from './dto/user.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyOtpAndUpdatePasswordDto } from './dto/VerifyOtpAndUpdatePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
+import { EditUserDto } from './dto/editUser.dto';
 
 
 @Controller('user')
@@ -37,6 +38,22 @@ export class UserController {
   @Post('verifyOtpAndUpdatePassword')
   verifyOtpAndUpdatePassword(@Body() dto: VerifyOtpAndUpdatePasswordDto) {
     return this.userServices.verifyOtpAndUpdatePassword(dto);
+  }
+
+  @ApiTags(ModuleName.USER)
+  @Get('userProfile/:userId')
+  @ApiParam({ example: 1, name: 'userId', required: true })
+  viewProfile(@Param('userId') userId: number) {
+    return this.userServices.viewProfile(userId)
+  }
+
+  @ApiTags(ModuleName.USER)
+  @Put('updateProfile/:userId')
+  @ApiParam({ example: 1, name: "userId", required: true })
+  updateProfile(@Param('userId') userId: number,
+    @Body() dto: EditUserDto
+  ) {
+    return this.userServices.updateProfile(userId, dto)
   }
 
 }
