@@ -7,6 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { VerifyOtpAndUpdatePasswordDto } from './dto/VerifyOtpAndUpdatePassword.dto';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 import { EditUserDto } from './dto/editUser.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 
 @Controller('user')
@@ -54,6 +55,14 @@ export class UserController {
     @Body() dto: EditUserDto
   ) {
     return this.userServices.updateProfile(userId, dto)
+  }
+
+  @Put('changePassword/:userId')
+  changePassword(@Param('userId') userId: number,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    console.log('controller userId', userId)
+    return this.userServices.changePassword(userId, dto);
   }
 
 }

@@ -13,5 +13,8 @@ export enum Messages{
     EMAIL_INCORRECT = 'Email is incorrect',
     EMAIL_FORMAT_NOT = 'Email format not found',
     USER_FOUND = 'User Found Successfully',
-    ERROR_UPDATE = 'Error while updating the user'
+    ERROR_UPDATE = 'Error while updating the user',
+    FAILED_TO = 'Failed to',
+    INCORRECT_PASSWORD = 'Your current password is incorrect.',
+    CONFIRM_PASSWORD = 'Your new and confirm password is does not match.',
 }

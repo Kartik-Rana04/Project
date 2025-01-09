@@ -16,6 +16,7 @@ import { Otp } from 'src/model/otp.model';
 import { VerifyEmailDto } from './dto/verifyEmail.dto';
 import { emailSend } from 'src/libs/helper/mail';
 import { EditUserDto } from './dto/editUser.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Injectable()
 export class UserService {
@@ -301,5 +302,66 @@ export class UserService {
       )
     }
 
+  }
+
+  async changePassword(
+    userId : number,
+    changePasswordDto: ChangePasswordDto,
+  ) {
+    const { currentPassword, newPassword,confirmPassword } = changePasswordDto;
+
+    console.log('userId', userId)
+
+    if(newPassword !== confirmPassword){
+      return HandleResponse(
+        HttpStatus.BAD_REQUEST,
+        ResponseData.ERROR,
+        Messages.CONFIRM_PASSWORD
+      )
+    }
+
+    const existingUser: AuthUser = await this.dbService.findOne(
+      this.userModel,
+      { id: userId },
+      null,
+      { message: Messages.USER_NOT_FOUND },
+      undefined,
+      undefined,
+      true,
+    );
+
+    const validPassword: any = await bcrypt.compare(
+      currentPassword,
+      existingUser.password,
+    );
+
+    if (validPassword) {
+      const saltRounds = 10;
+      const bcryptPassword: any = await bcrypt.hash(newPassword, saltRounds);
+
+      const [updatedPassword]: number[] = await this.dbService.update(
+        this.userModel,
+        { password: bcryptPassword },
+        { id: existingUser.id },
+        null,
+        { message: Messages.FAILED_TO },
+      );
+
+      if (updatedPassword === 1) {
+        Logger.log(`Your password is ${Messages.UPDATE_SUCCESS}`);
+        return HandleResponse(
+          HttpStatus.ACCEPTED,
+          ResponseData.SUCCESS,
+          `Your password is ${Messages.UPDATE_SUCCESS}`,
+        );
+      }
+    } else {
+      Logger.error(Messages.INCORRECT_PASSWORD);
+      return HandleResponse(
+        HttpStatus.NOT_ACCEPTABLE,
+        ResponseData.ERROR,
+        Messages.INCORRECT_PASSWORD,
+      );
+    }
   }
 }

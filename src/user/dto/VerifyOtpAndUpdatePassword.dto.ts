@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsNotEmpty,IsEmail,IsNumber, IsString, Matches } from "class-validator";
-import { Match } from "src/libs/dto/match.decorator";
+import { IsNotEmpty,IsEmail,IsNumber, IsString } from "class-validator";
 
 export class VerifyOtpAndUpdatePasswordDto {
     @ApiProperty({
@@ -26,29 +25,22 @@ export class VerifyOtpAndUpdatePasswordDto {
       otp: number;
   
     @ApiProperty({
-      example: 'Shruti@123',
+      example: 'Kartik@123',
       type: 'string',
       format: 'string',
       required: false,
     })
     @IsString()
-    @Matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#,-./:;<?\]^_`'])[A-Za-z\d@$!%*#+,-./:;<=^_`']{8,}$/,
-      {
-        message: 'Your password is too weak',
-      },
-    )
     @IsNotEmpty()
       password: string;
   
     @ApiProperty({
-      example: 'Shruti@123',
+      example: 'Kartik@123',
       type: 'string',
       format: 'string',
       required: false,
     })
     @IsString()
-    @Match('password', { message: 'Your confirm Password is not match.' })
     @IsNotEmpty()
       confirmPassword: string;
   }

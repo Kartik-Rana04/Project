@@ -45,7 +45,7 @@ export class AddUserDto {
     contact_no: string;
 
     @ApiProperty({
-        example: 'nimit.varma@gmail.com',
+        example: 'kartikrana.shivinfotech@gmail.com',
         type: 'string',
         format: 'string',
         required: true,
@@ -54,7 +54,7 @@ export class AddUserDto {
     email: string;
 
     @ApiProperty({
-        example: 'Nimit@123',
+        example: 'Test@123',
         type: 'string',
         format: 'string',
         required: true,
